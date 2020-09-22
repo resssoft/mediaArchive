@@ -1,0 +1,34 @@
+version: '2.2'
+services:
+  media_archive_backend:
+    container_name: media_archive_backend
+    image: media_archive_backend
+    build:
+      dockerfile: ../../docker/backend/Dockerfile
+      context: ../backend/api
+    ports:
+      - "8091:8091"
+    restart: on-failure
+    environment:
+      - DB_MONGODB_URL=mongodb-server-ma:27017
+      - DB_MONGODB_USER=root
+      - DB_MONGODB_PASSWORD=test
+      - DB_MONGODB_DBNAME=media_archive
+    depends_on:
+      - mongodb
+    networks:
+      - media_archive
+  mongodb:
+    container_name: mongodb-server-ma
+    image: bitnami/mongodb:latest
+#    volumes:
+#      - ./data/mongodb:/bitnami/mongodb
+    environment:
+      - MONGODB_ROOT_PASSWORD=test
+    networks:
+      - media_archive
+    restart: on-failure
+networks:
+  media_archive:
+    name: media_archive_network
+    driver: bridge

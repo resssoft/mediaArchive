@@ -1,0 +1,12 @@
+loglevel: debug
+address:
+  api: :8091
+db:
+  mongoDb:
+    user: root
+    password: test
+    url: 127.0.0.1:27017
+    dbname: media_archive
+kafka:
+  brokers:
+  - 127.0.0.1:9092
