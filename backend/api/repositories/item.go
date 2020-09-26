@@ -1,9 +1,9 @@
-package repository
+package repositories
 
 import (
 	"fmt"
 	"github.com/resssoft/mediaArchive/database"
-	"github.com/resssoft/mediaArchive/model"
+	"github.com/resssoft/mediaArchive/models"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -14,9 +14,9 @@ import (
 const itemCollectionName = "item"
 
 type ItemRepository interface {
-	Add(model.Item) error
-	GetItemByID(string) (model.Item, error)
-	List(string, interface{}) ([]*model.Item, error)
+	Add(models.Item) error
+	GetItemByID(string) (models.Item, error)
+	List(string, interface{}) ([]*models.Item, error)
 }
 
 type itemRepo struct {
@@ -32,7 +32,7 @@ func NewItemRepo(db database.MongoClientApplication) ItemRepository {
 	}
 }
 
-func (r *itemRepo) Add(item model.Item) error {
+func (r *itemRepo) Add(item models.Item) error {
 	log.Info().Interface("new item", item).Send()
 	item.ID = primitive.NewObjectID()
 	_, err := r.collection.InsertOne(r.dbApp.GetContext(), item)
@@ -43,9 +43,9 @@ func (r *itemRepo) Add(item model.Item) error {
 	return nil
 }
 
-func (r *itemRepo) getByField(name string, value interface{}) (model.Item, error) {
+func (r *itemRepo) getByField(name string, value interface{}) (models.Item, error) {
 
-	item := model.Item{}
+	item := models.Item{}
 	filter := bson.M{name: value}
 	err := r.collection.FindOne(r.dbApp.GetContext(), filter).Decode(&item)
 	if err != nil {
@@ -55,9 +55,9 @@ func (r *itemRepo) getByField(name string, value interface{}) (model.Item, error
 	return item, nil
 }
 
-func (r *itemRepo) List(name string, value interface{}) ([]*model.Item, error) {
+func (r *itemRepo) List(name string, value interface{}) ([]*models.Item, error) {
 	options := options.Find()
-	items := make([]*model.Item, 0)
+	items := make([]*models.Item, 0)
 	//filter := bson.M{name: value}
 	filter := bson.M{}
 	cur, err := r.collection.Find(r.dbApp.GetContext(), filter, options)
@@ -66,7 +66,7 @@ func (r *itemRepo) List(name string, value interface{}) ([]*model.Item, error) {
 	}
 
 	for cur.Next(r.dbApp.GetContext()) {
-		var item model.Item
+		var item models.Item
 		err := cur.Decode(&item)
 		if err != nil {
 			log.Fatal().Err(err).Send()
@@ -85,7 +85,7 @@ func (r *itemRepo) List(name string, value interface{}) ([]*model.Item, error) {
 	return items, nil
 }
 
-func (r *itemRepo) GetItemByID(id string) (model.Item, error) {
+func (r *itemRepo) GetItemByID(id string) (models.Item, error) {
 	item, err := r.getByField("_id", id)
 	return item, err
 }

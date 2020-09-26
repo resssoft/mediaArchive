@@ -1,14 +1,14 @@
-package controller
+package controllers
 
 import (
 	"encoding/json"
 	"fmt"
 	"github.com/buaazp/fasthttprouter"
-	"github.com/resssoft/mediaArchive/app"
 	config "github.com/resssoft/mediaArchive/configuration"
 	"github.com/resssoft/mediaArchive/database"
-	"github.com/resssoft/mediaArchive/model"
-	"github.com/resssoft/mediaArchive/repository"
+	"github.com/resssoft/mediaArchive/models"
+	"github.com/resssoft/mediaArchive/repositories"
+	"github.com/resssoft/mediaArchive/services"
 	"github.com/rs/zerolog/log"
 	"github.com/valyala/fasthttp"
 )
@@ -21,7 +21,7 @@ var (
 func CORS(next fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return func(ctx *fasthttp.RequestCtx) {
 		ctx.Response.Header.Set("Access-Control-Allow-Origin", "*")
-		ctx.Response.Header.Set("Access-Control-Allow-Methods", "POST, GET")
+		ctx.Response.Header.Set("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE")
 		ctx.Response.Header.Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 		next(ctx)
 	}
@@ -31,8 +31,8 @@ func Routing(db database.MongoClientApplication, address string) error {
 	router := fasthttprouter.New()
 	router.GET("/api/version", version)
 
-	itemRepo := repository.NewItemRepo(db)
-	itemApp := app.NewItemApp(itemRepo)
+	itemRepo := repositories.NewItemRepo(db)
+	itemApp := services.NewItemApp(itemRepo)
 	itemRouter := NewUserRoute(itemRepo, itemApp)
 	router.POST("/api/item/", itemRouter.AddItem)
 	router.GET("/api/item/:id", itemRouter.GetItem)
@@ -51,8 +51,8 @@ func version(ctx *fasthttp.RequestCtx) {
 	fmt.Fprintf(ctx, "{version:%s}", config.Version)
 }
 
-func getError(msg string, code int) model.RequestError {
-	return model.RequestError{
+func getError(msg string, code int) models.RequestError {
+	return models.RequestError{
 		Error: msg,
 		Code:  code,
 	}
