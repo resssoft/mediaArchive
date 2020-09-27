@@ -10,6 +10,8 @@ type ItemApplication interface {
 	List(string, interface{}) ([]*models.Item, error)
 }
 
+var coubService = CoubHandler{}
+
 type itemApp struct {
 	repo repositories.ItemRepository
 }
@@ -23,6 +25,12 @@ func NewItemApp(repo repositories.ItemRepository) ItemApplication {
 
 func (r *itemApp) AddItem(item models.Item) error {
 	var err error
+	if item.URL != "" {
+		switch {
+		case coubService.Check(item):
+			item = coubService.ProcessItem(item)
+		}
+	}
 	err = r.repo.Add(item)
 	if err != nil {
 		return err
