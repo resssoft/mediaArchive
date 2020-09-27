@@ -6,6 +6,8 @@ const (
 	ItemForMusic         ItemAssignment = "music"
 	ItemForMusicAndVideo ItemAssignment = "musicAndVideo"
 	ItemForVideo         ItemAssignment = "video"
+	ItemForPicture       ItemAssignment = "picture"
+	ItemForWebPage       ItemAssignment = "webPage"
 	ItemForNothing       ItemAssignment = ""
 )
 
