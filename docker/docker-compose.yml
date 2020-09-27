@@ -19,12 +19,30 @@ services:
     networks:
       - media_archive
   mongodb:
+#    ports:
+#      - "27017:27017"
     container_name: mongodb-server-ma
     image: bitnami/mongodb:latest
 #    volumes:
 #      - ./data/mongodb:/bitnami/mongodb
     environment:
       - MONGODB_ROOT_PASSWORD=test
+    networks:
+      - media_archive
+    restart: on-failure
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express-ma
+#    ports:
+#      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongodb-server-ma
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=test
+      - ME_CONFIG_MONGODB_AUTH_DATABASE=admin
+    depends_on:
+      - mongodb
     networks:
       - media_archive
     restart: on-failure
