@@ -20,11 +20,13 @@ type Item struct {
 	Image       string             `bson:"image"`
 	URL         string             `bson:"url"`
 	Tags        []string           `bson:"tags"`
-	Categories  []string           `bson:"group"`
+	Categories  []string           `bson:"categories"`
+	Groups      []string           `bson:"groups"`
 	Cache       string             `bson:"cache"`
 	Media       []ItemMedia        `bson:"media"`
 	Error       string             `bson:"error"`
-	Service     string             `bson:"Service"`
+	Favorite    bool               `bson:"favorite"`
+	Service     string             `bson:"service"`
 	ServiceData interface{}        `bson:"service_data"`
 }
 
@@ -32,4 +34,7 @@ type ItemMedia struct {
 	Type      string `bson:"type"`
 	RemoteUrl string `bson:"remoteUrl"`
 	LocalUrl  string `bson:"localUrl"`
+	HashSum   string `bson:"hashSum"`
+	HashAlg   string `bson:"hashAlg"`
+	Size      int64  `bson:"size"`
 }
