@@ -38,10 +38,10 @@ func (handler *CoubHandler) ProcessItem(item models.Item) models.Item {
 	apiResult, err := handler.itemRawApiInfo(item.URL)
 	if len(apiResult) == 0 {
 		item.Error = "cant coub processed: " + err.Error()
+		log.Error().AnErr("download error", err).Send()
 		return item
 	}
 	item.Cache = string(apiResult)
-	log.Info().Interface("api data", item.Cache).Send()
 	coubItem := models.CoubItem{}
 	if err := json.Unmarshal(apiResult, &coubItem); err != nil {
 		log.Info().
@@ -60,7 +60,6 @@ func (handler *CoubHandler) ProcessItem(item models.Item) models.Item {
 				},
 			}
 		}
-		log.Info().Interface("item", item).Send()
 		item.ServiceData = coubItem
 	}
 	return item
@@ -80,7 +79,6 @@ func (handler *CoubHandler) itemRawApiInfo(url string) ([]byte, error) {
 	if containsKey(permalinkMatch, 1) {
 		downloader := Downloader{}
 		result, err := downloader.Download(fmt.Sprintf(apiUrlTemplate, permalinkMatch[1]))
-		log.Info().Interface("result", result).Send()
 		if err != nil {
 			return nil, err
 		}

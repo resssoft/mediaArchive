@@ -33,7 +33,6 @@ func NewItemRepo(db database.MongoClientApplication) ItemRepository {
 }
 
 func (r *itemRepo) Add(item models.Item) error {
-	log.Info().Interface("new item", item).Send()
 	item.ID = primitive.NewObjectID()
 	_, err := r.collection.InsertOne(r.dbApp.GetContext(), item)
 	if err != nil {
@@ -71,7 +70,6 @@ func (r *itemRepo) List(name string, value interface{}) ([]*models.Item, error) 
 		if err != nil {
 			log.Fatal().Err(err).Send()
 		}
-		log.Info().Interface("item", item).Send()
 		items = append(items, &item)
 	}
 

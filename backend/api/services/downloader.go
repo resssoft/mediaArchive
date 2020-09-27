@@ -2,29 +2,36 @@ package services
 
 import (
 	"github.com/resssoft/mediaArchive/interfaces"
+	"github.com/rs/zerolog/log"
 	"io/ioutil"
-	"log"
 	"net/http"
 )
 
 type Downloader struct {
-	status int
+	LastStatus int
+	LastSize   int
 	interfaces.IDownLoader
 }
 
 func (d *Downloader) Download(url string) ([]byte, error) {
-	log.Printf("Download of %s\n", url)
 	response, err := http.Get(url)
 	if err != nil {
-		log.Printf("Status: %v Error: %v \n", err.Error())
 		return nil, err
 	}
-	d.status = response.StatusCode
-	log.Println(response.StatusCode)
+	d.LastStatus = response.StatusCode
 	defer response.Body.Close()
 	data, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		log.Printf("Read body error: %v \n", err.Error())
+		return nil, err
+	}
+	d.LastSize = len(data)
+	if response.StatusCode != 200 {
+		log.
+			Error().
+			Int("statusCode", response.StatusCode).
+			Str("URL", url).
+			Str("body", string(data)).
+			Send()
 	}
 	return data, err
 }
