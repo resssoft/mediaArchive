@@ -15,7 +15,7 @@ func init() {
 	viper.AllowEmptyEnv(true)
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
+	viper.AddConfigPath(".\\backend\\api")
 	err := viper.ReadInConfig()
 	if err != nil {
 		log.Info().Msg("Unable to read config file")
