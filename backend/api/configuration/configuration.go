@@ -4,8 +4,12 @@ import (
 	"fmt"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
+	"os"
 	"strings"
 )
+
+const ImportDir = "./uploads/import/"
+const ExportDir = "./uploads/export/"
 
 var Version = "0.0.1"
 
@@ -19,6 +23,14 @@ func init() {
 	err := viper.ReadInConfig()
 	if err != nil {
 		log.Info().Msg("Unable to read config file")
+	}
+	err = os.MkdirAll(ImportDir, 0666)
+	if err != nil {
+		log.Error().AnErr("Cant create import dir", err).Msg(ImportDir)
+	}
+	err = os.MkdirAll(ExportDir, 0666)
+	if err != nil {
+		log.Error().AnErr("Cant create export dir", err).Msg(ExportDir)
 	}
 }
 

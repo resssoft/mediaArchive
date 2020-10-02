@@ -40,6 +40,7 @@ func Routing(db database.MongoClientApplication, address string) error {
 	router.DELETE("/api/item/", itemRouter.DeleteItem)
 	router.GET("/api/items/", itemRouter.ItemsList)
 	router.GET("/api/items/export", itemRouter.ExportItems)
+	router.POST("/api/items/import", itemRouter.ImportItems)
 
 	log.Info().Msg("Launched under version: " + config.Version)
 	log.Info().Msg("Start by address: " + address)
