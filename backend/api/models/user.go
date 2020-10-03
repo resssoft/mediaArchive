@@ -24,13 +24,14 @@ type User struct {
 	Phone    string             `bson:"phone"`
 	Password string             `bson:"password"`
 	Settings UserSettings       `bson:"settings"`
-	Role     string             `bson:"role"`
+	Role     UserRole           `bson:"role"`
 }
 
 type UserData struct {
 	Id       string       `bson:"id"`
 	Email    string       `bson:"email"`
 	Settings UserSettings `bson:"settings"`
+	Role     UserRole     `bson:"role"`
 }
 
 type UserFriends struct {
@@ -45,7 +46,7 @@ type UserSettings struct {
 	Language          string `bson:"language"`
 }
 
-type UserRoles struct {
+type UserRole struct {
 	Id          int              `bson:"id"`
 	Name        string           `bson:"name"`
 	Permissions []UserPermission `bson:"permissions"`
@@ -57,4 +58,13 @@ type UserNotice struct {
 	Message string    `bson:"message"`
 	Type    string    `bson:"type"`
 	Source  string    `bson:"source"`
+}
+
+func (r *UserRole) CheckPerm(perm UserPermission) bool {
+	for _, item := range r.Permissions {
+		if item == perm {
+			return true
+		}
+	}
+	return false
 }

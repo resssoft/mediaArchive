@@ -1,4 +1,6 @@
 loglevel: debug
+security:
+  salt: replace-to-your-random-string
 address:
   api: :8091
 db:

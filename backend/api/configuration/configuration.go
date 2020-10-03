@@ -57,3 +57,7 @@ func MongoDbName() string {
 func ApiUrl() string {
 	return viper.GetString("address.api")
 }
+
+func PasswordSalt() string {
+	return viper.GetString("security.salt")
+}
