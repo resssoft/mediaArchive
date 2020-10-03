@@ -41,6 +41,7 @@ func (handler *CoubHandler) ProcessItem(item models.Item) models.Item {
 		log.Error().AnErr("download error", err).Send()
 		return item
 	}
+	item.Error = ""
 	item.Cache = string(apiResult)
 	coubItem := models.CoubItem{}
 	if err := json.Unmarshal(apiResult, &coubItem); err != nil {
@@ -52,6 +53,9 @@ func (handler *CoubHandler) ProcessItem(item models.Item) models.Item {
 		item.Categories = coubItem.GetCategoriesNames()
 		item.Tags = coubItem.GetTagNames()
 		item.Image = coubItem.Picture
+		if item.Assignment == "" || item.Assignment == models.ItemForWebPage {
+			item.Assignment = models.ItemForVideo
+		}
 		if item.Assignment == models.ItemForMusic {
 			item.Media = []models.ItemMedia{
 				{

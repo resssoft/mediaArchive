@@ -41,6 +41,7 @@ func Routing(db database.MongoClientApplication, address string) error {
 	router.GET("/api/items/", itemRouter.ItemsList)
 	router.GET("/api/items/export", itemRouter.ExportItems)
 	router.POST("/api/items/import", itemRouter.ImportItems)
+	router.POST("/api/items/upload", itemRouter.UploadFile)
 
 	log.Info().Msg("Launched under version: " + config.Version)
 	log.Info().Msg("Start by address: " + address)

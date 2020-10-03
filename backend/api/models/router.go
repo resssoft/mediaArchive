@@ -12,3 +12,9 @@ type Response struct {
 	NextPage bool        `json:"nextPage,omitempty"`
 	Data     interface{} `json:"data"`
 }
+
+type ImportParams struct {
+	ServiceProcessing bool   `json:"serviceProcessing,omitempty"`
+	DownloadToLocal   bool   `json:"downloadToLocal,omitempty"`
+	FileName          string `json:"fileName,omitempty"`
+}

@@ -8,10 +8,13 @@ import (
 	"strings"
 )
 
-const ImportDir = "./uploads/import/"
-const ExportDir = "./uploads/export/"
-
-var Version = "0.0.1"
+const (
+	ImportDir          = "./uploads/import/"
+	ExportDir          = "./uploads/export/"
+	DateTimeFormat     = "2006-01-02T15:04:05Z07:00"
+	DateTimeFlatFormat = "20060102150405"
+	Version            = "0.0.1001"
+)
 
 func init() {
 	viper.AutomaticEnv()
@@ -19,6 +22,7 @@ func init() {
 	viper.AllowEmptyEnv(true)
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
+	//TODO:change this to .
 	viper.AddConfigPath(".\\backend\\api")
 	err := viper.ReadInConfig()
 	if err != nil {
