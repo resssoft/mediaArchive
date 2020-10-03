@@ -18,3 +18,7 @@
 .idea/*
 *.iml
 go.sum
+
+# Project
+uploads/
+cache/

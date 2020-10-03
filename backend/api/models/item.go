@@ -26,6 +26,7 @@ type Item struct {
 	Media       []ItemMedia        `bson:"media"`
 	Error       string             `bson:"error"`
 	Favorite    bool               `bson:"favorite"`
+	Viewed      bool               `bson:"viewed"`
 	Service     string             `bson:"service"`
 	ServiceData interface{}        `bson:"service_data"`
 }
