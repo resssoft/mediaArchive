@@ -2,6 +2,7 @@ package models
 
 import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"strings"
 	"time"
 )
 
@@ -21,6 +22,7 @@ const (
 type User struct {
 	Id       primitive.ObjectID `bson:"_id"`
 	Email    string             `bson:"email"`
+	Lang     string             `bson:"lang"`
 	Phone    string             `bson:"phone"`
 	Password string             `bson:"password"`
 	Settings UserSettings       `bson:"settings"`
@@ -28,10 +30,11 @@ type User struct {
 }
 
 type UserData struct {
-	Id       string       `bson:"id"`
-	Email    string       `bson:"email"`
-	Settings UserSettings `bson:"settings"`
-	Role     UserRole     `bson:"role"`
+	Id       string       `json:"id"`
+	Email    string       `json:"email"`
+	Lang     string       `json:"lang"`
+	Settings UserSettings `json:"settings"`
+	Role     UserRole     `json:"role"`
 }
 
 type UserFriends struct {
@@ -47,8 +50,6 @@ type UserSettings struct {
 }
 
 type UserRole struct {
-	Id          int              `bson:"id"`
-	Name        string           `bson:"name"`
 	Permissions []UserPermission `bson:"permissions"`
 }
 
@@ -67,4 +68,30 @@ func (r *UserRole) CheckPerm(perm UserPermission) bool {
 		}
 	}
 	return false
+}
+
+func (r *UserRole) PermsToString() string {
+	permissions := make([]string, 0)
+	for _, item := range r.Permissions {
+		permissions = append(permissions, string(item))
+	}
+	return strings.Join(permissions, ",")
+}
+
+func (r *UserRole) PermsFromString(perms string) {
+	permissions := make([]UserPermission, 0)
+	for _, item := range perms {
+		permissions = append(permissions, UserPermission(item))
+	}
+	r.Permissions = permissions
+}
+
+func (u *User) Data() UserData {
+	return UserData{
+		Id:       u.Id.Hex(),
+		Lang:     u.Lang,
+		Email:    u.Email,
+		Settings: u.Settings,
+		Role:     u.Role,
+	}
 }

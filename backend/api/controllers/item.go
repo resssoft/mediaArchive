@@ -24,7 +24,7 @@ type ItemRouter struct {
 	app  services.ItemApplication
 }
 
-func NewUserRoute(repo repositories.ItemRepository, app services.ItemApplication) *ItemRouter {
+func NewItemRoute(repo repositories.ItemRepository, app services.ItemApplication) *ItemRouter {
 	return &ItemRouter{repo: repo, app: app}
 }
 

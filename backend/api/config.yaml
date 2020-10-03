@@ -12,3 +12,10 @@ db:
 kafka:
   brokers:
   - 127.0.0.1:9092
+admin:
+  login: admin@admin.net
+  password: admin
+Jwt:
+  SecretAccess: sdagdfdadgaASfsskjn
+  AtExpires: 20h
+  RtExpires: 168h

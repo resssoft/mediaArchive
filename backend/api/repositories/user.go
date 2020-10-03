@@ -17,6 +17,7 @@ type UserRepository interface {
 	Update(models.User) error
 	GetByID(string) (models.User, error)
 	List(string, interface{}) ([]*models.User, error)
+	GetByEmail(string) (models.User, error)
 }
 
 type userRepo struct {
@@ -26,6 +27,7 @@ type userRepo struct {
 
 func NewUserRepo(db database.MongoClientApplication) UserRepository {
 	collection := db.GetCollection(userCollectionName)
+	db.CreateUniqueIndex(collection, "email")
 	return &userRepo{
 		dbApp:      db,
 		collection: collection,
@@ -92,5 +94,10 @@ func (r *userRepo) List(name string, value interface{}) ([]*models.User, error) 
 
 func (r *userRepo) GetByID(id string) (models.User, error) {
 	user, err := r.getByField("_id", id)
+	return user, err
+}
+
+func (r *userRepo) GetByEmail(email string) (models.User, error) {
+	user, err := r.getByField("email", email)
 	return user, err
 }
