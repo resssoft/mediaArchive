@@ -11,6 +11,7 @@ import (
 	"github.com/resssoft/mediaArchive/models"
 	"github.com/resssoft/mediaArchive/repositories"
 	"github.com/resssoft/mediaArchive/services"
+	"github.com/resssoft/mediaArchive/services/translation"
 	"github.com/rs/zerolog/log"
 	"github.com/valyala/fasthttp"
 	"time"
@@ -30,7 +31,7 @@ func CORS(next fasthttp.RequestHandler) fasthttp.RequestHandler {
 	}
 }
 
-func Routing(db database.MongoClientApplication, address string) error {
+func Routing(db database.MongoClientApplication, tr translation.TranslatorApplication, address string) error {
 	authMiddleware := AuthMiddleware(WithExpirationValidator())
 	router := fasthttprouter.New()
 	router.GET("/api/version", version)
@@ -56,6 +57,9 @@ func Routing(db database.MongoClientApplication, address string) error {
 	router.GET("/api/auth/refresh-token", AuthMiddleware().Wrap(userRouter.RefreshToken))
 	router.GET("/api/user/info/", authMiddleware.Wrap(userRouter.UserInfo))
 	router.POST("/api/user/", authMiddleware.Wrap(userRouter.AddUser))
+
+	transactionRouter := NewTranslationRoute(tr)
+	router.GET("/api/languages/", transactionRouter.LanguagesList)
 
 	log.Info().Msg("Launched under version: " + config.Version)
 	log.Info().Msg("Start by address: " + address)

@@ -1,0 +1,2 @@
+[HelloPerson]
+other = "Hello {{.Name}}"
