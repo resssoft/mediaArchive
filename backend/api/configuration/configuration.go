@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/viper"
 	"os"
 	"strings"
+	"time"
 )
 
 const (
@@ -56,4 +57,28 @@ func MongoDbName() string {
 
 func ApiUrl() string {
 	return viper.GetString("address.api")
+}
+
+func PasswordSalt() string {
+	return viper.GetString("security.salt")
+}
+
+func JwtAtExpires() time.Duration {
+	return viper.GetDuration("Jwt.AtExpires")
+}
+
+func JwtRtExpires() time.Duration {
+	return viper.GetDuration("Jwt.RtExpires")
+}
+
+func JwtSecretAccess() []byte {
+	return []byte(viper.GetString("Jwt.SecretAccess"))
+}
+
+func AdminLogin() string {
+	return viper.GetString("admin.login")
+}
+
+func AdminPassword() string {
+	return viper.GetString("admin.password")
 }

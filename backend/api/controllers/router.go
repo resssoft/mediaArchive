@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/buaazp/fasthttprouter"
+	"github.com/gbrlsnchs/jwt/v3"
+	"github.com/resssoft/mediaArchive/auth"
 	config "github.com/resssoft/mediaArchive/configuration"
 	"github.com/resssoft/mediaArchive/database"
 	"github.com/resssoft/mediaArchive/models"
@@ -11,6 +13,7 @@ import (
 	"github.com/resssoft/mediaArchive/services"
 	"github.com/rs/zerolog/log"
 	"github.com/valyala/fasthttp"
+	"time"
 )
 
 var (
@@ -28,12 +31,13 @@ func CORS(next fasthttp.RequestHandler) fasthttp.RequestHandler {
 }
 
 func Routing(db database.MongoClientApplication, address string) error {
+	authMiddleware := AuthMiddleware(WithExpirationValidator())
 	router := fasthttprouter.New()
 	router.GET("/api/version", version)
 
 	itemRepo := repositories.NewItemRepo(db)
 	itemApp := services.NewItemApp(itemRepo)
-	itemRouter := NewUserRoute(itemRepo, itemApp)
+	itemRouter := NewItemRoute(itemRepo, itemApp)
 	router.POST("/api/item/", itemRouter.AddItem)
 	router.GET("/api/item/:id", itemRouter.GetItem)
 	router.PUT("/api/item/", itemRouter.UpdateItem)
@@ -42,6 +46,16 @@ func Routing(db database.MongoClientApplication, address string) error {
 	router.GET("/api/items/export", itemRouter.ExportItems)
 	router.POST("/api/items/import", itemRouter.ImportItems)
 	router.POST("/api/items/upload", itemRouter.UploadFile)
+
+	userRepo := repositories.NewUserRepo(db)
+	userApp := services.NewUserApp(userRepo)
+	userApp.AddOwner()
+	userRouter := NewUserRoute(userRepo, userApp)
+	router.POST("/api/auth/sign-in", userRouter.Login)
+	router.POST("/api/auth/sign-out", authMiddleware.Wrap(userRouter.Logout))
+	router.GET("/api/auth/refresh-token", AuthMiddleware().Wrap(userRouter.RefreshToken))
+	router.GET("/api/user/info/", authMiddleware.Wrap(userRouter.UserInfo))
+	router.POST("/api/user/", authMiddleware.Wrap(userRouter.AddUser))
 
 	log.Info().Msg("Launched under version: " + config.Version)
 	log.Info().Msg("Start by address: " + address)
@@ -67,4 +81,43 @@ func writeJsonResponse(ctx *fasthttp.RequestCtx, code int, obj interface{}) {
 		log.Err(err).Send()
 		ctx.Error(err.Error(), fasthttp.StatusInternalServerError)
 	}
+}
+
+type Middleware interface {
+	Wrap(fasthttp.RequestHandler) fasthttp.RequestHandler
+}
+
+type SimpleMiddleware func(fasthttp.RequestHandler) fasthttp.RequestHandler
+
+func (m SimpleMiddleware) Wrap(next fasthttp.RequestHandler) fasthttp.RequestHandler {
+	return m(next)
+}
+
+func AuthMiddleware(opts ...jwt.Validator) SimpleMiddleware {
+	handler := func(ctx *fasthttp.RequestCtx) error {
+		token := auth.ExtractBearerToken(ctx)
+		payload, err := auth.VerifyToken(token, opts...)
+		if err != nil {
+			return err
+		}
+		ctx.SetUserValue("userRole", payload.Perms)
+		ctx.SetUserValue("userId", payload.UserId)
+		ctx.SetUserValue("userLang", payload.UserLang)
+		ctx.SetUserValue("session", payload.Payload.JWTID)
+		return nil
+	}
+	return func(next fasthttp.RequestHandler) fasthttp.RequestHandler {
+		return func(ctx *fasthttp.RequestCtx) {
+			if err := handler(ctx); err != nil {
+				log.Debug().Err(err).Msg("Token verification error")
+				ctx.SetStatusCode(fasthttp.StatusUnauthorized)
+			} else {
+				next(ctx)
+			}
+		}
+	}
+}
+
+func WithExpirationValidator() jwt.Validator {
+	return jwt.ExpirationTimeValidator(time.Now())
 }
