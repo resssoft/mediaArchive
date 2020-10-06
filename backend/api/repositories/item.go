@@ -61,21 +61,24 @@ func (r *itemRepo) List(name string, value interface{}) ([]*models.Item, error) 
 	filter := bson.M{}
 	cur, err := r.collection.Find(r.dbApp.GetContext(), filter, options)
 	if err != nil {
-		log.Fatal().Err(err).Send()
+		log.Error().Err(err).Send()
+		return nil, err
 	}
 
 	for cur.Next(r.dbApp.GetContext()) {
 		var item models.Item
 		err := cur.Decode(&item)
 		if err != nil {
-			log.Fatal().Err(err).Send()
+			log.Error().Err(err).Send()
+			continue
 		}
 		items = append(items, &item)
 	}
 
 	log.Info().Interface("items", items).Send()
 	if err := cur.Err(); err != nil {
-		log.Fatal().Err(err).Send()
+		log.Error().Err(err).Send()
+		return nil, err
 	}
 	cur.Close(r.dbApp.GetContext())
 

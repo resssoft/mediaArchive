@@ -72,28 +72,35 @@ func (r *userRepo) List(name string, value interface{}) ([]*models.User, error) 
 	filter := bson.M{}
 	cur, err := r.collection.Find(r.dbApp.GetContext(), filter, options)
 	if err != nil {
-		log.Fatal().Err(err).Send()
+		log.Error().Err(err).Send()
+		return nil, err
 	}
 
 	for cur.Next(r.dbApp.GetContext()) {
 		var user models.User
 		err := cur.Decode(&user)
 		if err != nil {
-			log.Fatal().Err(err).Send()
+			log.Error().Err(err).Send()
+			continue
 		}
 		users = append(users, &user)
 	}
 
 	log.Info().Interface("users", users).Send()
 	if err := cur.Err(); err != nil {
-		log.Fatal().Err(err).Send()
+		log.Error().Err(err).Send()
+		return nil, err
 	}
 	cur.Close(r.dbApp.GetContext())
 	return users, nil
 }
 
 func (r *userRepo) GetByID(id string) (models.User, error) {
-	user, err := r.getByField("_id", id)
+	ObjId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return models.User{}, err
+	}
+	user, err := r.getByField("_id", ObjId)
 	return user, err
 }
 
