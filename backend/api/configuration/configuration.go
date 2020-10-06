@@ -12,6 +12,7 @@ import (
 const (
 	ImportDir          = "./uploads/import/"
 	ExportDir          = "./uploads/export/"
+	TranslationDir     = "./translations/"
 	DateTimeFormat     = "2006-01-02T15:04:05Z07:00"
 	DateTimeFlatFormat = "20060102150405"
 	Version            = "0.0.1001"
@@ -24,7 +25,7 @@ func init() {
 	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
 	//TODO:change this to .
-	viper.AddConfigPath(".\\backend\\api")
+	viper.AddConfigPath(".")
 	err := viper.ReadInConfig()
 	if err != nil {
 		log.Info().Msg("Unable to read config file")
