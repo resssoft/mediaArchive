@@ -9,19 +9,23 @@ import (
 
 type ItemApplication interface {
 	AddItem(models.Item) error
+	AddItemGroup(models.ItemGroup) error
 	List(string, interface{}) ([]*models.Item, error)
 	ImportFromJson([]byte) (models.GoogleBookmarks, error)
+	GroupList(string, interface{}) ([]*models.ItemGroup, error)
 }
 
 var coubService = CoubHandler{}
 
 type itemApp struct {
-	repo repositories.ItemRepository
+	repo      repositories.ItemRepository
+	groupRepo repositories.ItemGroupRepository
 }
 
-func NewItemApp(repo repositories.ItemRepository) ItemApplication {
+func NewItemApp(repo repositories.ItemRepository, groupRepo repositories.ItemGroupRepository) ItemApplication {
 	app := &itemApp{
-		repo: repo,
+		repo:      repo,
+		groupRepo: groupRepo,
 	}
 	return app
 }
@@ -59,4 +63,27 @@ func (r *itemApp) ImportFromJson(data []byte) (models.GoogleBookmarks, error) {
 	} else {
 		return googleBookmarks, nil
 	}
+}
+
+func (r *itemApp) AddItemGroup(itemGroup models.ItemGroup) error {
+	var err error
+	if itemGroup.ParentCode != "" {
+		itemGroup.Code = itemGroup.ParentCode + "#" + itemGroup.Name
+	}
+	if itemGroup.Code == "" {
+		itemGroup.Code = itemGroup.Name
+	}
+	err = r.groupRepo.Add(itemGroup)
+	if err != nil {
+		return err
+	}
+	return err
+}
+
+func (r *itemApp) GroupList(name string, value interface{}) ([]*models.ItemGroup, error) {
+	items, err := r.groupRepo.List(name, value)
+	if err != nil {
+		return items, err
+	}
+	return items, err
 }

@@ -37,7 +37,8 @@ func Routing(db database.MongoClientApplication, tr translation.TranslatorApplic
 	router.GET("/api/version", version)
 
 	itemRepo := repositories.NewItemRepo(db)
-	itemApp := services.NewItemApp(itemRepo)
+	itemGroupRepo := repositories.NewItemGroupRepo(db)
+	itemApp := services.NewItemApp(itemRepo, itemGroupRepo)
 	itemRouter := NewItemRoute(itemRepo, itemApp)
 	router.POST("/api/item/", itemRouter.AddItem)
 	router.GET("/api/item/:id", itemRouter.GetItem)
@@ -47,6 +48,9 @@ func Routing(db database.MongoClientApplication, tr translation.TranslatorApplic
 	router.GET("/api/items/export", itemRouter.ExportItems)
 	router.POST("/api/items/import", itemRouter.ImportItems)
 	router.POST("/api/items/upload", itemRouter.UploadFile)
+
+	router.POST("/api/item-group/", itemRouter.AddItemGroup)
+	router.GET("/api/item-groups/", itemRouter.ItemsGroups)
 
 	userRepo := repositories.NewUserRepo(db)
 	userApp := services.NewUserApp(userRepo)

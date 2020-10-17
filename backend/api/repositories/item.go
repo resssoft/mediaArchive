@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"fmt"
 	"github.com/resssoft/mediaArchive/database"
 	"github.com/resssoft/mediaArchive/models"
 	"github.com/rs/zerolog/log"
@@ -81,8 +80,6 @@ func (r *itemRepo) List(name string, value interface{}) ([]*models.Item, error) 
 		return nil, err
 	}
 	cur.Close(r.dbApp.GetContext())
-
-	fmt.Printf("Found multiple documents (array of pointers): %+v\n", items)
 	return items, nil
 }
 

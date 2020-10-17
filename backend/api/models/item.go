@@ -15,7 +15,7 @@ type ItemAssignment string
 
 type Item struct {
 	ID          primitive.ObjectID `bson:"_id"`
-	Title       string             `bson:"name"`
+	Title       string             `bson:"title"`
 	Assignment  ItemAssignment     `bson:"assignment"`
 	Image       string             `bson:"image"`
 	URL         string             `bson:"url"`
@@ -29,6 +29,7 @@ type Item struct {
 	Viewed      bool               `bson:"viewed"`
 	Service     string             `bson:"service"`
 	ServiceData interface{}        `bson:"service_data"`
+	Icon        string             `bson:"icon"`
 }
 
 type ItemMedia struct {

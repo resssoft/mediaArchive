@@ -132,3 +132,35 @@ func StringWithCharset(length int, charset string) string {
 	}
 	return string(b)
 }
+
+func (r *ItemRouter) AddItemGroup(ctx *fasthttp.RequestCtx) {
+	newItemGroup := new(models.ItemGroup)
+	err := json.Unmarshal(ctx.PostBody(), newItemGroup)
+	if err != nil {
+		writeJsonResponse(ctx, http.StatusBadRequest, getError(err.Error(), 31))
+		return
+	}
+	err = r.app.AddItemGroup(*newItemGroup)
+	if err != nil {
+		writeJsonResponse(ctx, http.StatusBadRequest, getError(err.Error(), 32))
+		return
+	}
+	writeJsonResponse(ctx, http.StatusOK, "OK")
+}
+
+func (r *ItemRouter) ItemsGroups(ctx *fasthttp.RequestCtx) {
+	//TODO: add to cache
+	itemsGroups, err := r.app.GroupList("", "")
+	if err != nil {
+		writeJsonResponse(ctx, http.StatusBadRequest, getError(err.Error(), 32))
+		return
+	}
+	flatGroups := make([]models.ItemGroupFlat, 0)
+	for _, value := range itemsGroups {
+		flatGroups = append(flatGroups, value.ToFlat())
+	}
+	writeJsonResponse(ctx, http.StatusOK, models.Response{
+		Data:  flatGroups,
+		Count: len(flatGroups),
+	})
+}
