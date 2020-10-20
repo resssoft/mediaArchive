@@ -13,6 +13,7 @@ const (
 
 type ItemAssignment string
 
+//TODO: link hash
 type Item struct {
 	ID          primitive.ObjectID `bson:"_id"`
 	Title       string             `bson:"title"`
@@ -30,6 +31,7 @@ type Item struct {
 	Service     string             `bson:"service"`
 	ServiceData interface{}        `bson:"service_data"`
 	Icon        string             `bson:"icon"`
+	UserID      string             `bson:"user_id"`
 }
 
 type ItemMedia struct {
@@ -39,4 +41,11 @@ type ItemMedia struct {
 	HashSum   string `bson:"hashSum"`
 	HashAlg   string `bson:"hashAlg"`
 	Size      int64  `bson:"size"`
+}
+
+type ItemParams struct {
+	Data      Item `json:"data"`
+	Cache     bool `json:"cache"`
+	Processed bool `json:"processed"`
+	Preview   bool `json:"preview"`
 }

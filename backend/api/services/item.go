@@ -10,9 +10,9 @@ import (
 type ItemApplication interface {
 	AddItem(models.Item) error
 	AddItemGroup(models.ItemGroup) error
-	List(string, interface{}) ([]*models.Item, error)
+	List(models.Filter) ([]*models.Item, error)
 	ImportFromJson([]byte) (models.GoogleBookmarks, error)
-	GroupList(string, interface{}) ([]*models.ItemGroup, error)
+	GroupList(models.Filter) ([]*models.ItemGroup, error)
 }
 
 var coubService = CoubHandler{}
@@ -45,8 +45,8 @@ func (r *itemApp) AddItem(item models.Item) error {
 	return err
 }
 
-func (r *itemApp) List(name string, value interface{}) ([]*models.Item, error) {
-	items, err := r.repo.List(name, value)
+func (r *itemApp) List(filter models.Filter) ([]*models.Item, error) {
+	items, err := r.repo.List(filter)
 	if err != nil {
 		return items, err
 	}
@@ -80,8 +80,8 @@ func (r *itemApp) AddItemGroup(itemGroup models.ItemGroup) error {
 	return err
 }
 
-func (r *itemApp) GroupList(name string, value interface{}) ([]*models.ItemGroup, error) {
-	items, err := r.groupRepo.List(name, value)
+func (r *itemApp) GroupList(filter models.Filter) ([]*models.ItemGroup, error) {
+	items, err := r.groupRepo.List(filter)
 	if err != nil {
 		return items, err
 	}

@@ -7,6 +7,7 @@ type ItemGroup struct {
 	Code       string             `bson:"code"`
 	ParentCode string             `bson:"parent_code"`
 	Name       string             `bson:"name"`
+	UserID     string             `bson:"user_id"`
 }
 
 type ItemGroupFlat struct {

@@ -29,7 +29,10 @@ func NewItemRoute(repo repositories.ItemRepository, app services.ItemApplication
 }
 
 func (r *ItemRouter) ItemsList(ctx *fasthttp.RequestCtx) {
-	items, err := r.app.List("", "")
+	filter := models.Filter{
+		"user_id": ctx.UserValue("userId").(string),
+	}
+	items, err := r.app.List(filter)
 	if err != nil {
 		writeJsonResponse(ctx, http.StatusBadRequest, getError(err.Error(), 32))
 		return
@@ -41,12 +44,14 @@ func (r *ItemRouter) ItemsList(ctx *fasthttp.RequestCtx) {
 }
 
 func (r *ItemRouter) AddItem(ctx *fasthttp.RequestCtx) {
+	currentUserID := ctx.UserValue("userId").(string)
 	newItem := new(models.Item)
 	err := json.Unmarshal(ctx.PostBody(), newItem)
 	if err != nil {
 		writeJsonResponse(ctx, http.StatusBadRequest, getError(err.Error(), 31))
 		return
 	}
+	newItem.UserID = currentUserID
 	err = r.app.AddItem(*newItem)
 	if err != nil {
 		writeJsonResponse(ctx, http.StatusBadRequest, getError(err.Error(), 32))
@@ -68,6 +73,7 @@ func (r *ItemRouter) ExportItems(ctx *fasthttp.RequestCtx) {
 }
 
 func (r *ItemRouter) ImportItems(ctx *fasthttp.RequestCtx) {
+	currentUserID := ctx.UserValue("userId").(string)
 	params := new(models.ImportParams)
 	err := json.Unmarshal(ctx.PostBody(), params)
 	if err != nil {
@@ -97,6 +103,7 @@ func (r *ItemRouter) ImportItems(ctx *fasthttp.RequestCtx) {
 					Groups:      []string{"gb-" + flatGB.Folder},
 					Service:     "googleBookmarks",
 					ServiceData: flatGB,
+					UserID:      currentUserID,
 				})
 			}
 		}
@@ -105,6 +112,8 @@ func (r *ItemRouter) ImportItems(ctx *fasthttp.RequestCtx) {
 }
 
 func (r *ItemRouter) UploadFile(ctx *fasthttp.RequestCtx) {
+	//TODO: attach file access to user
+	//TODO: check file size, user size limit, disk limit
 	fh, err := ctx.FormFile("file")
 	if err != nil {
 		log.Error().AnErr("upload file error", err).Send()
@@ -134,7 +143,9 @@ func StringWithCharset(length int, charset string) string {
 }
 
 func (r *ItemRouter) AddItemGroup(ctx *fasthttp.RequestCtx) {
+	currentUserID := ctx.UserValue("userId").(string)
 	newItemGroup := new(models.ItemGroup)
+	newItemGroup.UserID = currentUserID
 	err := json.Unmarshal(ctx.PostBody(), newItemGroup)
 	if err != nil {
 		writeJsonResponse(ctx, http.StatusBadRequest, getError(err.Error(), 31))
@@ -149,8 +160,11 @@ func (r *ItemRouter) AddItemGroup(ctx *fasthttp.RequestCtx) {
 }
 
 func (r *ItemRouter) ItemsGroups(ctx *fasthttp.RequestCtx) {
+	filter := models.Filter{
+		"user_id": ctx.UserValue("userId").(string),
+	}
 	//TODO: add to cache
-	itemsGroups, err := r.app.GroupList("", "")
+	itemsGroups, err := r.app.GroupList(filter)
 	if err != nil {
 		writeJsonResponse(ctx, http.StatusBadRequest, getError(err.Error(), 32))
 		return
