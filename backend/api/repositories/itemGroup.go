@@ -15,7 +15,7 @@ const itemGroupCollectionName = "item_group"
 type ItemGroupRepository interface {
 	Add(models.ItemGroup) error
 	GetItemByID(string) (models.ItemGroup, error)
-	List(...models.Filter) ([]*models.ItemGroup, error)
+	List(...models.DataFilter) ([]*models.ItemGroup, error)
 }
 
 type itemGroupRepo struct {
@@ -53,7 +53,7 @@ func (r *itemGroupRepo) getByField(name string, value interface{}) (models.ItemG
 	return itemGroup, nil
 }
 
-func (r *itemGroupRepo) List(filter ...models.Filter) ([]*models.ItemGroup, error) {
+func (r *itemGroupRepo) List(filter ...models.DataFilter) ([]*models.ItemGroup, error) {
 	options := options.Find()
 	itemGroups := make([]*models.ItemGroup, 0)
 	//filter := bson.M{name: value}

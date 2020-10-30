@@ -29,9 +29,11 @@ func NewItemRoute(repo repositories.ItemRepository, app services.ItemApplication
 }
 
 func (r *ItemRouter) ItemsList(ctx *fasthttp.RequestCtx) {
-	filter := models.Filter{
-		"user_id": ctx.UserValue("userId").(string),
-	}
+	var filter models.DataFilter
+	filter.Append(
+		"user_id",
+		ctx.UserValue("userId").(string),
+	)
 	items, err := r.app.List(filter)
 	if err != nil {
 		writeJsonResponse(ctx, http.StatusBadRequest, getError(err.Error(), 32))
@@ -160,9 +162,11 @@ func (r *ItemRouter) AddItemGroup(ctx *fasthttp.RequestCtx) {
 }
 
 func (r *ItemRouter) ItemsGroups(ctx *fasthttp.RequestCtx) {
-	filter := models.Filter{
-		"user_id": ctx.UserValue("userId").(string),
-	}
+	var filter models.DataFilter
+	filter.Append(
+		"user_id",
+		ctx.UserValue("userId").(string),
+	)
 	//TODO: add to cache
 	itemsGroups, err := r.app.GroupList(filter)
 	if err != nil {

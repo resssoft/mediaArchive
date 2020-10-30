@@ -15,7 +15,7 @@ const itemCollectionName = "item"
 type ItemRepository interface {
 	Add(models.Item) error
 	GetItemByID(string) (models.Item, error)
-	List(models.Filter) ([]*models.Item, error)
+	List(models.DataFilter) ([]*models.Item, error)
 }
 
 type itemRepo struct {
@@ -53,11 +53,11 @@ func (r *itemRepo) getByField(name string, value interface{}) (models.Item, erro
 	return item, nil
 }
 
-func (r *itemRepo) List(filter models.Filter) ([]*models.Item, error) {
+func (r *itemRepo) List(filter models.DataFilter) ([]*models.Item, error) {
 	options := options.Find()
 	items := make([]*models.Item, 0)
 	//filter := bson.M{name: value}
-	mongoFilter := bson.D(filter.ToPrimitive())
+	mongoFilter := bson.D(filter.Data)
 	cur, err := r.collection.Find(r.dbApp.GetContext(), mongoFilter, options)
 	if err != nil {
 		log.Error().Err(err).Send()

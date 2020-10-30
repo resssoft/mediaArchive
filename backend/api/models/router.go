@@ -21,12 +21,11 @@ type ImportParams struct {
 	FileName          string `json:"fileName,omitempty"`
 }
 
-type Filter map[string]interface{}
+type DataFilter struct {
+	Data []primitive.E
+}
 
-func (f Filter) ToPrimitive() []primitive.E {
-	filterPrimitive := make([]primitive.E, 0)
-	for k, v := range f {
-		filterPrimitive = append(filterPrimitive, primitive.E{Key: k, Value: v})
-	}
-	return filterPrimitive
+func (f *DataFilter) Append(field string, value interface{}) *DataFilter {
+	f.Data = append(f.Data, primitive.E{Key: field, Value: value})
+	return f
 }
