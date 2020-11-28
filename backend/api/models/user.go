@@ -17,7 +17,12 @@ const (
 	FileSize500mbPerm  UserPermission = "files-500mb"
 	VoiceAnalysePerm   UserPermission = "voice-analyse"
 	SmsPerm            UserPermission = "sms"
+	SimplePerm         UserPermission = "simple"
 )
+
+var DefaultPerms = []UserPermission{
+	SimplePerm,
+}
 
 type User struct {
 	Id       primitive.ObjectID `bson:"_id"`
@@ -25,23 +30,21 @@ type User struct {
 	Lang     string             `bson:"lang"`
 	Phone    string             `bson:"phone"`
 	Password string             `bson:"password"`
-	Settings UserSettings       `bson:"settings"`
 	Role     UserRole           `bson:"role"`
 }
 
 type UserData struct {
-	Id       string       `json:"id"`
-	Email    string       `json:"email"`
-	Lang     string       `json:"lang"`
-	Settings UserSettings `json:"settings"`
-	Role     UserRole     `json:"role"`
+	Id              string        `json:"id"`
+	EmailForNotices string        `json:"email"`
+	LangInterface   string        `json:"lang"`
+	Settings        []UserSetting `bson:"settings"`
 }
 
 type UserFriends struct {
 	UserId string `bson:"user_id"`
 }
 
-type UserSettings struct {
+type UserSetting struct {
 	Id                string `bson:"id"`
 	CoubProcessing    bool   `bson:"coub_processing"`
 	VimeoProcessing   bool   `bson:"vimeo_processing"`
@@ -88,10 +91,8 @@ func (r *UserRole) PermsFromString(perms string) {
 
 func (u *User) Data() UserData {
 	return UserData{
-		Id:       u.Id.Hex(),
-		Lang:     u.Lang,
-		Email:    u.Email,
-		Settings: u.Settings,
-		Role:     u.Role,
+		Id:              u.Id.Hex(),
+		LangInterface:   u.Lang,
+		EmailForNotices: u.Email,
 	}
 }

@@ -40,6 +40,9 @@ func (r *userApp) Add(user models.User, authorId string) error {
 	if !author.Role.CheckPerm(models.OwnerPerm) {
 		return errors.New("you can`t create users")
 	}
+	if len(user.Role.Permissions) == 0 {
+		user.Role.Permissions = models.DefaultPerms
+	}
 	user.Password, err = r.hashPassword(user.Password)
 	if err != nil {
 		return err
