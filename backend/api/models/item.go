@@ -32,6 +32,7 @@ type Item struct {
 	ServiceData interface{}        `bson:"service_data"`
 	Icon        string             `bson:"icon"`
 	UserID      string             `bson:"user_id"`
+	Flags       []Flag             `bson:"flags"`
 }
 
 type ItemMedia struct {

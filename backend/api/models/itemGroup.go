@@ -9,6 +9,7 @@ type ItemGroup struct {
 	Name       string             `bson:"name"`
 	UserID     string             `bson:"user_id"`
 	Sort       int                `bson:"sort"`
+	Flags      []Flag             `bson:"flags"`
 }
 
 type ItemGroupFlat struct {
