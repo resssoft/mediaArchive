@@ -22,3 +22,4 @@ go.sum
 # Project
 uploads/
 cache/
+docker/data/*

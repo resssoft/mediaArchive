@@ -23,8 +23,8 @@ services:
       - "27017:27017"
     container_name: mongodb-server-ma
     image: bitnami/mongodb:latest
-#    volumes:
-#      - ./data/mongodb:/bitnami/mongodb
+    volumes:
+      - mongodata:/bitnami/mongodb
     environment:
       - MONGODB_ROOT_PASSWORD=test
     networks:
@@ -46,6 +46,8 @@ services:
     networks:
       - media_archive
     restart: on-failure
+volumes:
+  mongodata:
 networks:
   media_archive:
     name: media_archive_network
