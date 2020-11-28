@@ -25,6 +25,7 @@ type itemGroupRepo struct {
 
 func NewItemGroupRepo(db database.MongoClientApplication) ItemGroupRepository {
 	collection := db.GetCollection(itemGroupCollectionName)
+	db.CreateUniqueIndex(collection, "code")
 	return &itemGroupRepo{
 		dbApp:      db,
 		collection: collection,
@@ -34,6 +35,20 @@ func NewItemGroupRepo(db database.MongoClientApplication) ItemGroupRepository {
 func (r *itemGroupRepo) Add(itemGroup models.ItemGroup) error {
 	itemGroup.ID = primitive.NewObjectID()
 	_, err := r.collection.InsertOne(r.dbApp.GetContext(), itemGroup)
+	if err != nil {
+		log.Error().AnErr("Insert itemGroup error", err).Send()
+		return err
+	}
+	return nil
+}
+
+func (r *itemGroupRepo) AddMany(itemGroups []models.ItemGroup) error {
+	documents := make([]interface{}, 0)
+	for _, itemGroup := range itemGroups {
+		itemGroup.ID = primitive.NewObjectID()
+		documents = append(documents, itemGroup)
+	}
+	_, err := r.collection.InsertMany(r.dbApp.GetContext(), documents)
 	if err != nil {
 		log.Error().AnErr("Insert itemGroup error", err).Send()
 		return err

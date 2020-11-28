@@ -7,13 +7,15 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+const groupDefaultLevel = 100
+
 type ItemApplication interface {
 	AddItem(models.Item) error
 	AddItemGroup(models.ItemGroup) error
 	List(models.DataFilter) ([]*models.Item, error)
 	ImportFromJson([]byte) (models.GoogleBookmarks, error)
 	GroupList(models.DataFilter) ([]*models.ItemGroup, error)
-	CheckAndAddGroup([]string)
+	AddSimpleGroups([]string, string)
 }
 
 var coubService = CoubHandler{}
@@ -43,6 +45,8 @@ func (r *itemApp) AddItem(item models.Item) error {
 	if err != nil {
 		return err
 	}
+	// can be added if doesn't exist
+	go r.AddSimpleGroups(item.Groups, item.UserID)
 	return err
 }
 
@@ -87,4 +91,15 @@ func (r *itemApp) GroupList(filter models.DataFilter) ([]*models.ItemGroup, erro
 		return items, err
 	}
 	return items, err
+}
+
+func (r *itemApp) AddSimpleGroups(codes []string, userID string) {
+	for _, code := range codes {
+		r.groupRepo.Add(models.ItemGroup{
+			Code:   code,
+			Name:   code,
+			UserID: userID,
+			Sort:   groupDefaultLevel,
+		})
+	}
 }
