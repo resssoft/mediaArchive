@@ -5,6 +5,7 @@ import (
 	"github.com/resssoft/mediaArchive/models"
 	"github.com/resssoft/mediaArchive/repositories"
 	"github.com/rs/zerolog/log"
+	"regexp"
 )
 
 const groupDefaultLevel = 100
@@ -78,6 +79,7 @@ func (r *itemApp) AddItemGroup(itemGroup models.ItemGroup) error {
 	if itemGroup.Code == "" {
 		itemGroup.Code = itemGroup.Name
 	}
+	itemGroup.Depth = groupDepth(itemGroup.Code)
 	err = r.groupRepo.Add(itemGroup)
 	if err != nil {
 		return err
@@ -100,6 +102,12 @@ func (r *itemApp) AddSimpleGroups(codes []string, userID string) {
 			Name:   code,
 			UserID: userID,
 			Sort:   groupDefaultLevel,
+			Depth:  groupDepth(code),
 		})
 	}
+}
+
+func groupDepth(code string) int {
+	var re = regexp.MustCompile(`[^\#]`)
+	return len(re.ReplaceAllString(code, ``))
 }

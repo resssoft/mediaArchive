@@ -10,16 +10,19 @@ type ItemGroup struct {
 	UserID     string             `bson:"user_id"`
 	Sort       int                `bson:"sort"`
 	Flags      []Flag             `bson:"flags"`
+	Depth      int                `bson:"depth"`
 }
 
 type ItemGroupFlat struct {
-	Code string `json:"code"`
-	Name string `json:"name"`
+	Code  string `json:"code"`
+	Name  string `json:"name"`
+	Depth int    `json:"depth"`
 }
 
 func (ig *ItemGroup) ToFlat() ItemGroupFlat {
 	return ItemGroupFlat{
-		Code: ig.Code,
-		Name: ig.Name,
+		Code:  ig.Code,
+		Name:  ig.Name,
+		Depth: ig.Depth,
 	}
 }
