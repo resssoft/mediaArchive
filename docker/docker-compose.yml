@@ -14,6 +14,10 @@ services:
       - DB_MONGODB_USER=root
       - DB_MONGODB_PASSWORD=test
       - DB_MONGODB_DBNAME=media_archive
+      - JWT_SECRETACCESS=sdagdfdadgaASfsskjn
+      - JWT_ATEXPIRES=24h
+      - JWT_RTEXPIRES=168h
+      - ADDRESS_API=:8091
     depends_on:
       - mongodb
     networks:
