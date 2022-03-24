@@ -1,0 +1,246 @@
+{
+  "buttons": {
+    "DiscoverHV": {
+      "name": "Discover HV",
+      "api": "/api/launcher/start",
+      "apiStatus": "/api/launcher/status",
+      "class": "",
+      "timer": true
+    }
+  },
+  "title": "Servers",
+  "items": null,
+  "error": "",
+  "filter": [
+    {
+      "name": "Name",
+      "value": "",
+      "w": "120"
+    },
+    {
+      "name": "Ip",
+      "value": "",
+      "w": "100",
+      "realName": "Ip"
+    },
+    {
+      "name": "Platform",
+      "value": "",
+      "w": "100"
+    },
+    {
+      "name": "Model",
+      "value": "",
+      "w": "100"
+    },
+    {
+      "name": "Cpu",
+      "value": "",
+      "w": "50"
+    },
+    {
+      "name": "Ram",
+      "value": "",
+      "w": "50"
+    },
+    {
+      "name": "Comment",
+      "value": "",
+      "w": "120"
+    },
+    {
+      "name": "State",
+      "value": "",
+      "w": "50"
+    },
+    {
+      "name": "Mac",
+      "value": "",
+      "w": "100"
+    }
+  ],
+  "filterValues": {
+    "Name": "",
+    "Ip": "",
+    "Platform": "",
+    "Model": "",
+    "Cpu": "",
+    "Ram": "",
+    "Ssd": "",
+    "Hdd": "",
+    "Location": "",
+    "Sku": "",
+    "Comment": "",
+    "State": "",
+    "Mac": "",
+    "DiscoveredAt": ""
+  },
+  "filters": [],
+  "total": 0,
+  "apiList": "/api/manager/esxi/list",
+  "apiItem": "/esxi/",
+  "login": "/login",
+  "show": false,
+  "limit": 20,
+  "pageNumber": 1,
+  "sortField": "id",
+  "loading": "loaded",
+  "columns": [
+    {
+      "name": "Id",
+      "value": "Id"
+    },
+    {
+      "name": "Name",
+      "value": "Name",
+      "template": {
+        "value": "<span class='status-is##State##'></span><span class='simple-element-title'>##Name##</span><br><span class='gray-color'>##Model##</span>"
+      }
+    },
+    {
+      "name": "Ip",
+      "value": "Ip"
+    },
+    {
+      "name": "Info",
+      "value": "Info"
+    },
+    {
+      "name": "Platform",
+      "value": "Platform"
+    },
+    {
+      "name": "Cpu",
+      "value": "Cpu"
+    },
+    {
+      "name": "Ram",
+      "value": "Ram"
+    },
+    {
+      "name": "Ssd",
+      "value": "Ssd"
+    },
+    {
+      "name": "Hdd",
+      "value": "Hdd"
+    },
+    {
+      "name": "Location",
+      "value": "Location"
+    },
+    {
+      "name": "Sku",
+      "value": "Sku"
+    },
+    {
+      "name": "VmRam",
+      "value": "VmSum"
+    },
+    {
+      "name": "State",
+      "value": "State"
+    },
+    {
+      "name": "Mac",
+      "value": "Mac"
+    },
+    {
+      "name": "DiscoveredAt",
+      "value": "DiscoveredAt"
+    },
+    {
+      "name": "CRUD",
+      "value": "CRUD",
+      "buttons": [
+        "edit"
+      ]
+    }
+  "real-columns": [
+    {
+      "name": "Id",
+      "value": "Id"
+    },
+    {
+      "name": "Name",
+      "value": "Name"
+    },
+    {
+      "name": "Ip",
+      "value": "Ip"
+    },
+    {
+      "name": "Info",
+      "value": "Info"
+    },
+    {
+      "name": "Platform",
+      "value": "Platform"
+    },
+    {
+      "name": "Model",
+      "value": "Model"
+    },
+    {
+      "name": "Cpu",
+      "value": "Cpu"
+    },
+    {
+      "name": "Ram",
+      "value": "Ram"
+    },
+    {
+      "name": "Ssd",
+      "value": "Ssd"
+    },
+    {
+      "name": "Hdd",
+      "value": "Hdd"
+    },
+    {
+      "name": "Location",
+      "value": "Location"
+    },
+    {
+      "name": "Sku",
+      "value": "Sku"
+    },
+    {
+      "name": "VmRam",
+      "value": "VmSum"
+    },
+    {
+      "name": "State",
+      "value": "State"
+    },
+    {
+      "name": "Mac",
+      "value": "Mac"
+    },
+    {
+      "name": "DiscoveredAt",
+      "value": "DiscoveredAt"
+    },
+    {
+      "name": "CRUD",
+      "value": "CRUD",
+      "buttons": [
+        "edit"
+      ]
+    }
+  ],
+  "options": [
+    {
+      "value": "50",
+      "text": "50"
+    },
+    {
+      "value": "100",
+      "text": "100"
+    },
+    {
+      "value": "500",
+      "text": "500"
+    }
+  ]
+}

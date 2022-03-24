@@ -1,0 +1,173 @@
+
+.status {
+  width: 13px;
+  height: 13px;
+  background: #62D27A;
+  display: inline-block;
+  border-radius: 13px;
+  margin-top: 0px;
+  margin-right: 6px;
+  display: inline-block;
+}
+
+.status-OK {
+  background: #62D27A;
+}
+
+.status-NO.PING {
+  background: #e37d87;
+}
+
+.status- {
+  background: #b9b9b9;
+}
+
+.vm-state {
+  width: 13px;
+  height: 13px;
+  display: inline-block;
+  border-radius: 13px;
+  margin-top: 0px;
+  margin-right: 6px;
+  display: inline-block;
+}
+
+.vm-state.powered-on {
+  background: #62D27A;
+}
+
+.vm-state.powered-off {
+  background: #b9b9b9;
+}
+
+.vm-state.created {
+  font-size: 16px;
+}
+
+.ip-address-none.ip-address-ok {
+  font-weight: 700;
+  color: #e37d87;
+}
+
+.ip-status-none.ip-status-ok {
+  width: 13px;
+  height: 13px;
+  background: #e37d87;
+  display: inline-block;
+  border-radius: 13px;
+  margin-top: 0px;
+  margin-right: 6px;
+  display: inline-block;
+}
+
+.server-name {
+  font-size: 0.9rem;
+  font-weight: 400;
+  display: inline-block;
+}
+
+.server-model {
+  color: #93aec3;
+  font-size: 0.6rem;
+  margin-left: 20px;
+}
+
+.hardware-progress-bar {
+  width: 100%;
+  z-index: 1000;
+  padding-left: 9px;
+  margin-bottom: 0px;
+}
+
+.hardware-progress-bar li {
+  float: left;
+  width: 4.5px;
+  list-style: none;
+  text-align: center;
+  height: 20px;
+  color: white;
+  opacity: 0.8;
+}
+
+.cpu-progress li {
+  border-top: 1px solid rgb(0, 255, 0);
+  border-bottom: 1px solid rgb(0, 255, 0);
+}
+
+.cpu-progress li:first-child {
+  border-left: 1px solid rgb(0, 255, 0);
+}
+
+.cpu-progress li:last-child {
+  border-right: 1px solid rgb(0, 255, 0);
+}
+
+.ram-progress li {
+  border-top: 1px solid rgb(255, 0, 0);
+  border-bottom: 1px solid rgb(255, 0, 0);
+}
+
+.ram-progress li:first-child {
+  border-left: 1px solid rgb(255, 0, 0);
+}
+
+.ram-progress li:last-child {
+  border-right: 1px solid rgb(255, 0, 0);
+}
+
+.free-ram-progress li {
+  border-top: 1px solid rgb(255, 164, 0);
+  border-bottom: 1px solid rgb(255, 164, 0);
+}
+
+.free-ram-progress li:first-child {
+  border-left: 1px solid rgb(255, 164, 0);
+}
+
+.free-ram-progress li:last-child {
+  border-right: 1px solid rgb(255, 164, 0);
+}
+
+.disk-progress li {
+  border-top: 1px solid #ffffff;
+  border-bottom: 1px solid #ffffff;
+}
+
+.disk-progress li:first-child {
+  border-left: 1px solid #ffffff;
+}
+
+.disk-progress li:last-child {
+  border-right: 1px solid #ffffff;
+}
+
+.hardware-progress-bar + span {
+  z-index: 9999;
+  opacity: .99;
+  display: none;
+}
+
+.cpu-progress + span {
+  margin-left: -87px;
+}
+
+.ram-progress + span {
+  margin-left: -97px;
+}
+
+.free-ram-progress + span {
+  margin-left: -106px;
+}
+
+.disk-progress + span {
+  margin-left: -93px;
+}
+
+.cel-buttons{
+  display: block;
+  min-width: 63px;
+}
+
+.bar-wrapper {
+  float: left;
+}

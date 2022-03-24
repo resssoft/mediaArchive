@@ -1,0 +1,55 @@
+{
+  "sidebarMini": true,
+  "links": [
+    {
+      "name": "Home",
+      "to": "/",
+      "icon": "house-fill"
+    },
+    {
+      "name": "Data centers",
+      "to": "/dc/list",
+      "icon": "inboxes-fill"
+    },
+    {
+      "name": "Nets",
+      "to": "/net/list",
+      "icon": "hdd-network-fill"
+    },
+    {
+      "name": "IPs",
+      "to": "/ip/list",
+      "icon": "info-square-fill"
+    },
+    {
+      "name": "Servers",
+      "to": "/esxi/list",
+      "icon": "display-fill"
+    },
+    {
+      "name": "VMs",
+      "to": "/vm/list",
+      "icon": "hdd-fill"
+    },
+    {
+      "name": "Users",
+      "to": "/user/list",
+      "icon": "people-fill"
+    },
+    {
+      "name": "Settings",
+      "to": "/",
+      "icon": "gear-fill"
+    },
+    {
+      "name": "Configs",
+      "to": "/config/list",
+      "icon": "filter-square-fill"
+    },
+    {
+      "name": "Logs",
+      "to": "/log/list",
+      "icon": "collection-fill"
+    }
+  ]
+}

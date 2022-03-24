@@ -1,0 +1,52 @@
+{
+  "apiUrl": "/api/manager/net/",
+  "redirectToUrl": "/net/list",
+  "helperApiUrl": "/api/manager/net/validate",
+  "formData": {
+    "Id": {
+      "name": "Id",
+      "type": "number",
+      "value": "",
+      "show": false,
+      "class": ""
+    },
+    "Address": {
+      "name": "Address",
+      "type": "text",
+      "value": "",
+      "show": true,
+      "class": ""
+    },
+    "Mask": {
+      "name": "Mask",
+      "type": "text",
+      "value": "",
+      "show": true,
+      "class": ""
+    },
+    "Gateway": {
+      "name": "Gateway",
+      "type": "text",
+      "value": "",
+      "show": true,
+      "class": ""
+    },
+    "DcId": {
+      "name": "DcName",
+      "type": "select",
+      "value": "",
+      "show": true,
+      "class": "",
+      "url": "/api/manager/dc/list?sort=id",
+      "field": "Name",
+      "options": []
+    },
+    "Comment": {
+      "name": "Comment",
+      "type": "text",
+      "value": "",
+      "show": true,
+      "class": ""
+    }
+  }
+}
