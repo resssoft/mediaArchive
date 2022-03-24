@@ -4,8 +4,8 @@ services:
     container_name: media_archive_backend
     image: media_archive_backend
     build:
-      dockerfile: ../../docker/backend/Dockerfile
-      context: ../backend/api
+      dockerfile: docker/backend/Dockerfile
+      context: ..
     ports:
       - "8091:8091"
     restart: on-failure
@@ -54,5 +54,5 @@ volumes:
   mongodata:
 networks:
   media_archive:
-    name: media_archive_network
+    #    name: media_archive_network
     driver: bridge
