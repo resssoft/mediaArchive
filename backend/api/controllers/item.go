@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	config "github.com/resssoft/mediaArchive/configuration"
 	"github.com/resssoft/mediaArchive/models"
+	"github.com/resssoft/mediaArchive/pkg/requestFilter"
 	"github.com/resssoft/mediaArchive/repositories"
 	"github.com/resssoft/mediaArchive/services"
 	"github.com/rs/zerolog/log"
@@ -34,6 +36,23 @@ func (r *ItemRouter) ItemsList(ctx *fasthttp.RequestCtx) {
 		"user_id",
 		ctx.UserValue("userId").(string),
 	)
+	reqfilters, err := requestFilter.BuildFilter(argListLowCase(ctx), ctx.PostBody())
+	if err != nil {
+		writeJsonResponse(ctx, http.StatusBadRequest, getError(err.Error(), 32))
+	}
+	for _, reqFilter := range reqfilters.Filters {
+		var key string
+		var val interface{}
+		for k, v := range reqFilter.Data {
+			key = k
+			val = v
+			break
+		}
+		filter.Append(
+			key,
+			val,
+		)
+	}
 	items, err := r.app.List(filter)
 	if err != nil {
 		writeJsonResponse(ctx, http.StatusBadRequest, getError(err.Error(), 32))
@@ -63,9 +82,21 @@ func (r *ItemRouter) AddItem(ctx *fasthttp.RequestCtx) {
 }
 
 func (r *ItemRouter) UpdateItem(ctx *fasthttp.RequestCtx) {
+	err := r.app.Update(fmt.Sprintf("%v", ctx.UserValue("id")), ctx.PostBody())
+	if err != nil {
+		writeJsonResponse(ctx, http.StatusBadRequest, getError(err.Error(), 32))
+		return
+	}
+	writeJsonResponse(ctx, http.StatusOK, "OK")
 }
 
 func (r *ItemRouter) GetItem(ctx *fasthttp.RequestCtx) {
+	item, err := r.app.GetItem(fmt.Sprintf("%v", ctx.UserValue("id")))
+	if err != nil {
+		writeJsonResponse(ctx, http.StatusBadRequest, getError(err.Error(), 32))
+		return
+	}
+	writeJsonResponse(ctx, http.StatusOK, dataResponse(0, 0, 0, item))
 }
 
 func (r *ItemRouter) DeleteItem(ctx *fasthttp.RequestCtx) {

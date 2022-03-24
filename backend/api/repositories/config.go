@@ -10,29 +10,30 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const itemCollectionName = "item"
+const configCollectionName = "config"
 
-type ItemRepository interface {
-	Add(models.Item) error
-	GetItemByID(string) (models.Item, error)
-	List(models.DataFilter) ([]*models.Item, error)
-	Update(string, models.Item) error
+type ConfigRepository interface {
+	Add(models.Config) error
+	GetItemByID(string) (models.Config, error)
+	List(models.DataFilter) ([]models.Config, error)
+	Update(string, models.Config) error
 }
 
-type itemRepo struct {
+type configRepo struct {
 	dbApp      database.MongoClientApplication
 	collection *mongo.Collection
 }
 
-func NewItemRepo(db database.MongoClientApplication) ItemRepository {
-	collection := db.GetCollection(itemCollectionName)
-	return &itemRepo{
+func NewConfigRepo(db database.MongoClientApplication) ConfigRepository {
+	collection := db.GetCollection(configCollectionName)
+	db.CreateUniqueIndex(collection, "name", "group", "perm")
+	return &configRepo{
 		dbApp:      db,
 		collection: collection,
 	}
 }
 
-func (r *itemRepo) Add(item models.Item) error {
+func (r *configRepo) Add(item models.Config) error {
 	item.ID = primitive.NewObjectID()
 	_, err := r.collection.InsertOne(r.dbApp.GetContext(), item)
 	if err != nil {
@@ -42,9 +43,9 @@ func (r *itemRepo) Add(item models.Item) error {
 	return nil
 }
 
-func (r *itemRepo) getByField(name string, value interface{}) (models.Item, error) {
+func (r *configRepo) getByField(name string, value interface{}) (models.Config, error) {
 
-	item := models.Item{}
+	item := models.Config{}
 	filter := bson.M{name: value}
 	err := r.collection.FindOne(r.dbApp.GetContext(), filter).Decode(&item)
 	if err != nil {
@@ -54,10 +55,21 @@ func (r *itemRepo) getByField(name string, value interface{}) (models.Item, erro
 	return item, nil
 }
 
-func (r *itemRepo) List(filter models.DataFilter) ([]*models.Item, error) {
+func (r *configRepo) getByFields(values map[string]interface{}) (models.Config, error) {
+	var findQuery []bson.M
+	item := models.Config{}
+	//filter := bson.M{values...}
+	err := r.collection.FindOne(r.dbApp.GetContext(), findQuery).Decode(&item)
+	if err != nil {
+		log.Error().AnErr("item read error", err).Send()
+		return item, err
+	}
+	return item, nil
+}
+
+func (r *configRepo) List(filter models.DataFilter) ([]models.Config, error) {
 	options := options.Find()
-	items := make([]*models.Item, 0)
-	//filter := bson.M{name: value}
+	items := make([]models.Config, 0)
 	mongoFilter := bson.D(filter.Data)
 	cur, err := r.collection.Find(r.dbApp.GetContext(), mongoFilter, options)
 	if err != nil {
@@ -66,16 +78,16 @@ func (r *itemRepo) List(filter models.DataFilter) ([]*models.Item, error) {
 	}
 
 	for cur.Next(r.dbApp.GetContext()) {
-		var item models.Item
+		var item models.Config
 		err := cur.Decode(&item)
 		if err != nil {
 			log.Error().Err(err).Send()
 			continue
 		}
-		items = append(items, &item)
+		items = append(items, item)
 	}
 
-	log.Info().Interface("items", items).Send()
+	log.Info().Interface("configs", items).Send()
 	if err := cur.Err(); err != nil {
 		log.Error().Err(err).Send()
 		return nil, err
@@ -84,18 +96,12 @@ func (r *itemRepo) List(filter models.DataFilter) ([]*models.Item, error) {
 	return items, nil
 }
 
-func (r *itemRepo) GetItemByID(id string) (models.Item, error) {
-	log.Info().Msg(id)
-	idObj, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return models.Item{}, err
-	}
-	item, err := r.getByField("_id", idObj)
+func (r *configRepo) GetItemByID(id string) (models.Config, error) {
+	item, err := r.getByField("_id", id)
 	return item, err
 }
 
-func (r *itemRepo) Update(id string, item models.Item) error {
-	//primitive.ObjectID
+func (r *configRepo) Update(id string, item models.Config) error {
 	log.Info().Msg(id)
 	idObj, err := primitive.ObjectIDFromHex(id)
 	if err != nil {

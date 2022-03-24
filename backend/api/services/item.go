@@ -6,6 +6,7 @@ import (
 	"github.com/resssoft/mediaArchive/repositories"
 	"github.com/rs/zerolog/log"
 	"regexp"
+	"strings"
 )
 
 const groupDefaultLevel = 100
@@ -17,6 +18,8 @@ type ItemApplication interface {
 	ImportFromJson([]byte) (models.GoogleBookmarks, error)
 	GroupList(models.DataFilter) ([]*models.ItemGroup, error)
 	AddSimpleGroups([]string, string)
+	GetItem(string) (models.Item, error)
+	Update(string, []byte) error
 }
 
 var coubService = CoubHandler{}
@@ -110,4 +113,39 @@ func (r *itemApp) AddSimpleGroups(codes []string, userID string) {
 func groupDepth(code string) int {
 	var re = regexp.MustCompile(`[^\#]`)
 	return len(re.ReplaceAllString(code, ``))
+}
+
+func (r *itemApp) GetItem(id string) (models.Item, error) {
+	return r.repo.GetItemByID(id)
+}
+
+func (r *itemApp) Update(id string, groupsRaw []byte) error {
+	groupdsData := new(models.ItemUpdateGroup)
+	err := json.Unmarshal(groupsRaw, groupdsData)
+	log.Info().Interface("groupdsData", groupdsData).Msg(id)
+	if err == nil {
+		r.updateItemGroups(id, groupdsData.GroupsOnly)
+	} else {
+		return err
+	}
+	return nil
+	//TODO: update full item
+}
+
+func (r *itemApp) updateItemGroups(id string, groupsRaw string) error {
+	item, err := r.repo.GetItemByID(id)
+	if err != nil {
+		return err
+	}
+	groups := strings.Split(groupsRaw, ",")
+	if len(groups) > 0 {
+		item.Groups = groups
+	}
+	log.Info().
+		Interface("groupsRaw", groupsRaw).
+		Int("groupsRaw", len(groups)).
+		Strs("groups", groups).
+		Interface("item", item).
+		Msg(id)
+	return r.repo.Update(id, item)
 }

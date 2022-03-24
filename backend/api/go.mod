@@ -9,7 +9,6 @@ require (
 	github.com/mileusna/useragent v1.0.2
 	github.com/myesui/uuid v1.0.0 // indirect
 	github.com/nicksnyder/go-i18n/v2 v2.1.1
-	github.com/pelletier/go-toml v1.4.0
 	github.com/rs/zerolog v1.20.0
 	github.com/spf13/viper v1.7.1
 	github.com/twinj/uuid v1.0.0

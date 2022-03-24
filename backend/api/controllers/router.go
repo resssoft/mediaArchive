@@ -11,9 +11,11 @@ import (
 	"github.com/resssoft/mediaArchive/models"
 	"github.com/resssoft/mediaArchive/repositories"
 	"github.com/resssoft/mediaArchive/services"
+	configApp "github.com/resssoft/mediaArchive/services/config"
 	"github.com/resssoft/mediaArchive/services/translation"
 	"github.com/rs/zerolog/log"
 	"github.com/valyala/fasthttp"
+	"strings"
 	"time"
 )
 
@@ -21,6 +23,13 @@ var (
 	strContentType     = []byte("Content-Type")
 	strApplicationJSON = []byte("application/json")
 )
+
+type DataResponse struct {
+	Total int         `json:"total"`
+	Count int         `json:"count"`
+	Page  int         `json:"page"`
+	Data  interface{} `json:"data"`
+}
 
 func CORS(next fasthttp.RequestHandler) fasthttp.RequestHandler {
 	return func(ctx *fasthttp.RequestCtx) {
@@ -38,19 +47,38 @@ func Routing(db database.MongoClientApplication, tr translation.TranslatorApplic
 
 	itemRepo := repositories.NewItemRepo(db)
 	itemGroupRepo := repositories.NewItemGroupRepo(db)
+	configRepo := repositories.NewConfigRepo(db)
+
 	itemApp := services.NewItemApp(itemRepo, itemGroupRepo)
+	configApp := configApp.NewItemApp(configRepo)
+
 	itemRouter := NewItemRoute(itemRepo, itemApp)
+	configRouter := NewConfigRoute(configRepo, configApp)
+
 	router.POST("/api/item/", authMiddleware.Wrap(itemRouter.AddItem))
 	router.GET("/api/item/:id", authMiddleware.Wrap(itemRouter.GetItem))
-	router.PUT("/api/item/", authMiddleware.Wrap(itemRouter.UpdateItem))
+	router.PUT("/api/item/:id", authMiddleware.Wrap(itemRouter.UpdateItem))
+	router.PATCH("/api/item/:id", authMiddleware.Wrap(itemRouter.UpdateItem))
 	router.DELETE("/api/item/", authMiddleware.Wrap(itemRouter.DeleteItem))
 	router.GET("/api/items/", authMiddleware.Wrap(itemRouter.ItemsList))
+	router.POST("/api/items", authMiddleware.Wrap(itemRouter.ItemsList))
 	router.GET("/api/items/export", authMiddleware.Wrap(itemRouter.ExportItems))
 	router.POST("/api/items/import", authMiddleware.Wrap(itemRouter.ImportItems))
 	router.POST("/api/items/upload", authMiddleware.Wrap(itemRouter.UploadFile))
 
 	router.POST("/api/item-group/", authMiddleware.Wrap(itemRouter.AddItemGroup))
 	router.GET("/api/item-groups/", authMiddleware.Wrap(itemRouter.ItemsGroups))
+	router.POST("/api/item-groups/", authMiddleware.Wrap(itemRouter.ItemsGroups))
+
+	//router.GET("/api/config/:group", authMiddleware.Wrap(configRouter.ConfigData))
+	router.GET("/api/config/:group", authMiddleware.Wrap(configRouter.ConfigData))
+	router.GET("/api/config/:group/:name", authMiddleware.Wrap(configRouter.ConfigData))
+	router.POST("/api/config/list", authMiddleware.Wrap(configRouter.ConfigList))
+	//router.GET("/api/config/:id", authMiddleware.Wrap(configRouter.ConfigGet))
+	//router.POST("/api/config/", authMiddleware.Wrap(configRouter.ConfigAdd))
+	//router.PATCH("/api/config/", authMiddleware.Wrap(configRouter.ConfigUpdate))
+	//router.DELETE("/api/config/:id", authMiddleware.Wrap(configRouter.ConfigDelete))
+	router.GET("/api/user", authMiddleware.Wrap(usettest))
 
 	userRepo := repositories.NewUserRepo(db)
 	userApp := services.NewUserApp(userRepo)
@@ -73,6 +101,11 @@ func Routing(db database.MongoClientApplication, tr translation.TranslatorApplic
 func version(ctx *fasthttp.RequestCtx) {
 	ctx.Response.Header.SetCanonical(strContentType, strApplicationJSON)
 	fmt.Fprintf(ctx, "{version:%s}", config.Version)
+}
+
+func usettest(ctx *fasthttp.RequestCtx) {
+	ctx.Response.Header.SetCanonical(strContentType, strApplicationJSON)
+	fmt.Fprint(ctx, `{"total":1,"count":1,"page":0,"data":{"Id":634,"Email":"admin@admin.net","Password":"","Role":"admin"}}`)
 }
 
 func getError(msg string, code int) models.RequestError {
@@ -108,6 +141,7 @@ func AuthMiddleware(opts ...jwt.Validator) SimpleMiddleware {
 		if err != nil {
 			return err
 		}
+		log.Info().Msg(ctx.Request.String())
 		ctx.SetUserValue("userRole", payload.Perms)
 		ctx.SetUserValue("userId", payload.UserId)
 		ctx.SetUserValue("userLang", payload.UserLang)
@@ -128,4 +162,22 @@ func AuthMiddleware(opts ...jwt.Validator) SimpleMiddleware {
 
 func WithExpirationValidator() jwt.Validator {
 	return jwt.ExpirationTimeValidator(time.Now())
+}
+
+func dataResponse(total, count, page int, data interface{}) DataResponse {
+	return DataResponse{
+		Total: total,
+		Count: count,
+		Page:  page,
+		Data:  data,
+	}
+}
+
+func argListLowCase(ctx *fasthttp.RequestCtx) map[string]string {
+	args := make(map[string]string, 0)
+	ctx.QueryArgs().VisitAll(func(key, value []byte) {
+		key = []byte(strings.ToLower(string(key)))
+		args[strings.ToLower(string(key))] = string(value)
+	})
+	return args
 }

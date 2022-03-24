@@ -20,7 +20,7 @@ var (
 type MongoClientApplication interface {
 	GetCollection(string) *mongo.Collection
 	GetContext() context.Context
-	CreateUniqueIndex(*mongo.Collection, string)
+	CreateUniqueIndex(*mongo.Collection, ...string)
 	CreateIndexWithTimeout(*mongo.Collection, string, int32)
 }
 
@@ -52,13 +52,15 @@ func (r *mongoClientOriginal) GetContext() context.Context {
 	return r.context
 }
 
-func (r *mongoClientOriginal) CreateUniqueIndex(collection *mongo.Collection, key string) {
+func (r *mongoClientOriginal) CreateUniqueIndex(collection *mongo.Collection, keyList ...string) {
+	keys := bson.M{}
+	for _, key := range keyList {
+		keys[key] = 1
+	}
 	indexName, err := collection.Indexes().CreateOne(
 		context.Background(),
 		mongo.IndexModel{
-			Keys: bson.M{
-				key: 1,
-			},
+			Keys:    keys,
 			Options: options.Index().SetUnique(true),
 		},
 	)
@@ -86,6 +88,7 @@ func (r *mongoClientOriginal) CreateIndexWithTimeout(collection *mongo.Collectio
 
 func configureMongo(address string) {
 	var err error
+	log.Info().Msg(config.MongoUrl())
 	mongoContext = context.Background()
 	clientOptions := options.Client().ApplyURI(address)
 	mongoClient, err = mongo.Connect(mongoContext, clientOptions)

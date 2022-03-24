@@ -1,6 +1,9 @@
 package models
 
-import "go.mongodb.org/mongo-driver/bson/primitive"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
+)
 
 const (
 	ItemForMusic         ItemAssignment = "music"
@@ -33,6 +36,8 @@ type Item struct {
 	Icon        string             `bson:"icon"`
 	UserID      string             `bson:"user_id"`
 	Flags       []Flag             `bson:"flags"`
+	Created     time.Time
+	Updated     time.Time
 }
 
 type ItemMedia struct {
@@ -49,4 +54,8 @@ type ItemParams struct {
 	Cache     bool `json:"cache"`
 	Processed bool `json:"processed"`
 	Preview   bool `json:"preview"`
+}
+
+type ItemUpdateGroup struct {
+	GroupsOnly string `json:"Groups"`
 }

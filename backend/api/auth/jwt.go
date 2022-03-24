@@ -10,10 +10,12 @@ import (
 )
 
 var (
-	hs           = jwt.NewHS256(config.JwtSecretAccess())
-	tokenTTL     = config.JwtAtExpires()
 	bearerPrefix = []byte("bearer ")
 )
+
+func GetHs() *jwt.HMACSHA {
+	return jwt.NewHS256(config.JwtSecretAccess())
+}
 
 type JwtPayload struct {
 	jwt.Payload
@@ -23,7 +25,7 @@ type JwtPayload struct {
 }
 
 func NewAccessToken(perms string, userId, userLang, session string) (time.Time, []byte, error) {
-	expired := time.Now().Add(tokenTTL)
+	expired := time.Now().Add(config.JwtAtExpires())
 	payload := jwt.Payload{
 		JWTID:          session,
 		ExpirationTime: jwt.NumericDate(expired),
@@ -34,7 +36,7 @@ func NewAccessToken(perms string, userId, userLang, session string) (time.Time, 
 		UserId:   userId,
 		UserLang: userLang,
 	}
-	token, err := jwt.Sign(customPayload, hs)
+	token, err := jwt.Sign(customPayload, GetHs())
 	return expired, token, err
 }
 
@@ -44,7 +46,7 @@ func VerifyToken(token []byte, validators ...jwt.Validator) (*JwtPayload, error)
 	}
 	payload := new(JwtPayload)
 	validatePayload := jwt.ValidatePayload(&payload.Payload, validators...)
-	if _, err := jwt.Verify(token, hs, payload, validatePayload); err != nil {
+	if _, err := jwt.Verify(token, GetHs(), payload, validatePayload); err != nil {
 		return nil, fmt.Errorf("jwt token invalid: %w", err)
 	}
 	return payload, nil
